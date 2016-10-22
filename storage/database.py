@@ -13,7 +13,6 @@ class Database:
         self.connect()
 
     def connect(self):
-        # TODO: Add some error detection
         fileInit = True
         if (os.path.exists(self.dbfile)):
             fileInit = False
@@ -25,14 +24,14 @@ class Database:
 
     def addLine(self, data):
         # sanity check on the data
-        if(len(data) != 5):
+        if(len(data) != 7):
             return -1
 
-        query="INSERT INTO sensor_data(sensor_serial, sensor_db, sensor_gl, sensor_humid, sensor_wind) VALUES(?, ?, ?, ?, ?)"
+        query="INSERT INTO sensor_data(sensor_serial, dht_temp, dht_humid, soil_temp, soil_humid, sol_temp, sol_depth) VALUES(?, ?, ?, ?, ?, ?, ?)"
         cur = self.con.cursor()
 
         try:
-            cur.execute(query, (data[0], data[1], data[2], data[3], data[4]))
+            cur.execute(query, (data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
             self.con.commit()
         except lite.Error, e:
             if self.con:
@@ -75,7 +74,7 @@ class Database:
         return(0)
         
     def initTable(self):
-        query = 'DROP TABLE IF EXISTS sensor_data; CREATE TABLE sensor_data ("collect_date" DATETIME PRIMARY KEY  NOT NULL  DEFAULT (CURRENT_TIMESTAMP) ,"sensor_serial" VARCHAR(16) NOT NULL ,"sensor_db" REAL NOT NULL ,"sensor_gl" REAL NOT NULL ,"sensor_humid" REAL NOT NULL ,"sensor_wind" REAL NOT NULL , "transmit" BOOL NOT NULL  DEFAULT FALSE)'
+        query = 'DROP TABLE IF EXISTS sensor_data; CREATE TABLE sensor_data ("collect_date" DATETIME PRIMARY KEY  NOT NULL  DEFAULT (CURRENT_TIMESTAMP) , "sensor_serial" VARCHAR(16) NOT NULL , "dht_temp" REAL NOT NULL , "dht_humid" REAL NOT NULL , "soil_temp" REAL NOT NULL , "soil_humid" REAL NOT NULL , "sol_temp" REAL NOT NULL , "sol_depth" REAL NOT NULL , "transmit" BOOL NOT NULL DEFAULT FALSE)'
         cur = self.con.cursor()  
 
         try:
