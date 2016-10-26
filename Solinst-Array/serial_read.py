@@ -1,5 +1,7 @@
 import serial
 import time
+import storage.database as lite
+import datetime
 
 #    port='/dev/ttyAMA0',\
 ser = serial.Serial(
@@ -12,16 +14,30 @@ ser = serial.Serial(
 
 print("connected to: " + ser.portstr)
 
-try:
-    vals = []
-    while True:
-        ser.write("\n")
-        time.sleep(10)
-    
-        line = ser.readline().strip()
-        vals = line.split(',')
+# Get the serial number of this raspberry pi
+##serial = get_serial();
+#serial = "pc-test"
 
-except KeyboardInterrupt:
-    print 'Exiting'
+vals = []
+
+time.sleep(2)
+ser.write("\n")
+time.sleep(2)
+
+line = ser.readline().strip()
+
+vals = line.split(',')
 
 ser.close()
+
+
+# Store data into local database file
+# Determine the name of the database
+today = datetime.datetime.today()
+dbdate =  today.strftime('%Y%m%d')
+db_filename = "sensordata-" + dbdate + ".sqlite"
+
+sensordb = lite.Database("data/" + db_filename)
+sensordb.addLine(vals)
+
+sensordb.close()
