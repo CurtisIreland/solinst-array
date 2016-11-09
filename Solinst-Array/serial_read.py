@@ -5,7 +5,7 @@ import datetime
 
 #    port='/dev/ttyAMA0',\
 ser = serial.Serial(
-    port='COM7',\
+    port='COM3',\
     baudrate=9600,\
     parity=serial.PARITY_NONE,\
     stopbits=serial.STOPBITS_ONE,\
@@ -18,6 +18,7 @@ print("connected to: " + ser.portstr)
 ##serial = get_serial();
 #serial = "pc-test"
 
+datadir = "data/"
 vals = []
 
 time.sleep(2)
@@ -37,7 +38,7 @@ today = datetime.datetime.today()
 dbdate =  today.strftime('%Y%m%d')
 db_filename = "sensordata-" + dbdate + ".sqlite"
 
-sensordb = lite.Database("data/" + db_filename)
+sensordb = lite.Database(datadir + db_filename)
 sensordb.addLine(vals)
 
 sensordb.close()

@@ -60,12 +60,13 @@ class Database:
         return(rows)
     
     def sentData(self, raw_date):
-        collect_date = raw_date.strftime("%Y-%m-%d %H:%M:%S")
+#        collect_date = raw_date.strftime("%Y-%m-%d %H:%M:%S")
+        collect_date = raw_date
         query = "UPDATE sensor_data SET transmit='TRUE' WHERE collect_date=?"
         cur = self.con.cursor() 
 
         try:
-            cur.execute(query, (collect_date))
+            cur.execute(query, (collect_date,))
             self.con.commit()
         except lite.Error, e:
             if self.con:
