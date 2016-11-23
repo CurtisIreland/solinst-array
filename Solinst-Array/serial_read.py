@@ -2,11 +2,26 @@ import serial
 import time
 import storage.database as lite
 import datetime
+import os
+import ConfigParser
+
+# Load configuration
+config_file = "solinst.ini"
+if(not os.path.exists(config_file)):
+    exit(-1)
+
+Config = ConfigParser.ConfigParser()
+Config.read(config_file)
+
+DEBUG = Config.getboolean("general", "debug")
+datadir = Config.get("general", "data_dir")
+serial_port = Config.get("serial_read", "serial_port")
+serial_baud = Config.getint("serial_read", "serial_baud")
 
 #    port='/dev/ttyAMA0',\
 ser = serial.Serial(
-    port='COM3',\
-    baudrate=9600,\
+    port=serial_port,\
+    baudrate=serial_baud,\
     parity=serial.PARITY_NONE,\
     stopbits=serial.STOPBITS_ONE,\
     bytesize=serial.EIGHTBITS,\
@@ -18,15 +33,13 @@ print("connected to: " + ser.portstr)
 ##serial = get_serial();
 #serial = "pc-test"
 
-datadir = "data/"
 vals = []
 
 time.sleep(2)
 ser.write("\n")
-time.sleep(2)
+time.sleep(12)
 
 line = ser.readline().strip()
-
 vals = line.split(',')
 
 ser.close()

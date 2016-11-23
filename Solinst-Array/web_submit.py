@@ -4,6 +4,7 @@ import os
 import re
 import datetime
 import storage.database as lite
+import ConfigParser
 
 def file_list(datadir):
     filelist = []
@@ -14,7 +15,18 @@ def file_list(datadir):
             
     return(filelist)
 
-datadir = "data/"
+#Load config file
+config_file = "solinst.ini"
+if(not os.path.exists(config_file)):
+    exit(-1)
+
+Config = ConfigParser.ConfigParser()
+Config.read(config_file)
+
+DEBUG = Config.getboolean("general", "debug")
+datadir = Config.get("general", "data_dir")
+data_public = Config.get("web_submit", "data_public")
+data_private = Config.get("web_submit", "data_private")
 
 # Determine the name of the current database
 today = datetime.datetime.today()
@@ -47,7 +59,7 @@ for files in filelist:
         }
     
         conn = http.HTTPConnection("data.sparkfun.com")
-        conn.request("GET", "/input/roa2v7VjvaF0gybdZLjp?private_key=jkRvJXpjJRH4eYqlAdPg&" + urllib.urlencode(request))
+        conn.request("GET", "/input/" + data_public + "?private_key=" + data_private + "&" + urllib.urlencode(request))
         r1 = conn.getresponse()
 #        print r1.read()
         conn.close()
