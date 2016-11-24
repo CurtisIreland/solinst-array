@@ -33,6 +33,8 @@ today = datetime.datetime.today()
 dbdate =  today.strftime('%Y%m%d')
 db_filename = "sensordata-" + dbdate + ".sqlite"
 
+if DEBUG: print("Today's database file: " + db_filename)
+
 # Get list of database files
 filelist = file_list(datadir)
 for files in filelist:
@@ -45,6 +47,7 @@ for files in filelist:
         if(files != db_filename): 
             newfile = files[:-7] + "_done" + files[-7:]
             os.rename(datadir + files, datadir + newfile)
+            if DEBUG: print("Rename old database file: " + newfile)
         continue
 
     for data in datalist:
@@ -59,18 +62,21 @@ for files in filelist:
         }
     
         conn = http.HTTPConnection("data.sparkfun.com")
-        conn.request("GET", "/input/" + data_public + "?private_key=" + data_private + "&" + urllib.urlencode(request))
+        conn_line = "/input/" + data_public + "?private_key=" + data_private + "&" + urllib.urlencode(request)
+        if DEBUG: print("Data URI: " + conn_line)
+        
+        conn.request("GET", conn_line)
         r1 = conn.getresponse()
 #        print r1.read()
         conn.close()
 
+        if DEBUG: print("Return code: " + r1.status)
         if(r1.status != 200):
             continue
         
 #        conn.connect()
             
         sensordb.sentData(str(data[0]))
+        if DEBUG: print("Sent data: " + str(data[0]))
     sensordb.close()
-
-
-
+    if DEBUG: print("Close database.")
