@@ -27,7 +27,7 @@ class Database:
         if(len(data) != 6):
             return -1
 
-        query="INSERT INTO sensor_data( dht_temp, dht_humid, soil_temp, soil_humid, sol_temp, sol_depth) VALUES(?, ?, ?, ?, ?, ?)"
+        query="INSERT INTO sensor_data( dht_temp, dht_humid, soil_temp, soil_humid, sol_temp, sol_depth, rain_rate) VALUES(?, ?, ?, ?, ?, ?, ?)"
         cur = self.con.cursor()
 
         # print data
@@ -77,7 +77,7 @@ class Database:
         return(0)
         
     def initTable(self):
-        query = 'DROP TABLE IF EXISTS sensor_data; CREATE TABLE sensor_data ("collect_date" DATETIME PRIMARY KEY  NOT NULL  DEFAULT (CURRENT_TIMESTAMP) , "dht_temp" REAL NOT NULL , "dht_humid" REAL NOT NULL , "soil_temp" REAL NOT NULL , "soil_humid" REAL NOT NULL , "sol_temp" REAL NOT NULL , "sol_depth" REAL NOT NULL , "transmit" BOOL NOT NULL DEFAULT FALSE)'
+        query = 'DROP TABLE IF EXISTS sensor_data; CREATE TABLE sensor_data ("collect_date" DATETIME PRIMARY KEY  NOT NULL  DEFAULT (CURRENT_TIMESTAMP) , "dht_temp" REAL NOT NULL , "dht_humid" REAL NOT NULL , "soil_temp" REAL NOT NULL , "soil_humid" REAL NOT NULL , "sol_temp" REAL NOT NULL , "sol_depth" REAL NOT NULL , "rain_rate" REAL NOT NULL , "transmit" BOOL NOT NULL DEFAULT FALSE)'
         cur = self.con.cursor()  
 
         try:
