@@ -2,19 +2,26 @@
 #include <DHT.h>
 #include <SHT1x.h>
 
-#define DHTPIN  3         // Data pin for the DHT
-#define SHTDATA 4         // Soil sensor data pin (blue)
+#define RAINPIN 3         // Interrupt pin for Rain Gauge
+#define DHTPIN  4         // Data pin for the DHT
+#define SHTDATA 6         // Soil sensor data pin (blue)
 #define SHTCLK  5         // Soil sensor clock pin (yellow)
-#define SDIPIN  6         // Data pin for the Solinst
+#define SDIPIN  8         // Data pin for the Solinst
 
 #define DHTTYPE DHT22     // DHT 22  (AM2302), AM2321
 
 DHT dht(DHTPIN, DHTTYPE);
 SHT1x sht1x(SHTDATA, SHTCLK);
 SDI12 mySDI12(SDIPIN); 
+
+volatile unsigned long tiptime = millis();
+volatile unsigned long rainrate = 0;
            
 void setup(){
     Serial.begin(9600); 
+
+    pinMode(RAINPIN, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(RAINPIN), raincount, FALLING);
 
     dht.begin();
     mySDI12.begin(); 
@@ -72,8 +79,17 @@ String getData() {
     String soilTemp  = String(sht1x.readTemperatureC());
     String soilHumid = String(sht1x.readHumidity());
 
-    String output = dhtTemp + "," + dhtHumid + "," + soilTemp + "," + soilHumid + "," + solTemp + "," + solDepth;
+    String rainAmt = String(rainrate);
+
+    String output = dhtTemp + "," + dhtHumid + "," + soilTemp + "," + soilHumid + "," + solTemp + "," + solDepth + "," + rainAmt;
     return(output);
 }
 
+void raincount() {
+  unsigned long tipcount = millis() - tiptime;
+  tiptime = millis();
+  rainrate = 914400 / tipcount;
 
+
+  delay(500);
+}

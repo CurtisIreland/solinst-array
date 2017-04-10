@@ -79,4 +79,4 @@ for files in filelist:
         sensordb.sentData(str(data[0]))
         if DEBUG: print("Sent data: " + str(data[0]))
     sensordb.close()
-    if DEBUG: print("Close database.")
+    if DEBUG: print("Close database: " + files)
