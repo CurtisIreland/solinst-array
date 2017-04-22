@@ -24,7 +24,7 @@ class Database:
 
     def addLine(self, data):
         # sanity check on the data
-        if(len(data) != 6):
+        if(len(data) != 7):
             return -1
 
         query="INSERT INTO sensor_data( dht_temp, dht_humid, soil_temp, soil_humid, sol_temp, sol_depth, rain_rate) VALUES(?, ?, ?, ?, ?, ?, ?)"
@@ -33,7 +33,7 @@ class Database:
         # print data
 
         try:
-            cur.execute(query, (data[0], data[1], data[2], data[3], data[4], data[5]))
+            cur.execute(query, (data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
             self.con.commit()
         except lite.Error, e:
             if self.con:
