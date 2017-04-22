@@ -1,0 +1,7 @@
+# Cron schedule to manage data collection and transmission
+#
+# Collect data from attached sensor
+*/5 * * * *	/usr/bin/python /usr/local/solinst/serial_read.py
+#
+#Transmit data to collection service
+7,37 * * * *	/usr/local/solinst/modem-comm.sh
