@@ -60,7 +60,7 @@ for files in filelist:
             'soil_humid' : data[4],
             'sol_temp' : data[5],
             'sol_depth' : data[6],
-            'rain_rate' : data[6]
+            'rain_rate' : data[7]
         }
     
         conn = http.HTTPConnection("data.sparkfun.com")
