@@ -17,7 +17,7 @@ void count() {
   tiptime = millis();
   delay(500);
   
-  unsigned long rainrate = 914400 / tipcount;
+  double rainrate = 914400.0 / tipcount;
   
   Serial.print("Cup tip: ");
   Serial.print(tipcount);

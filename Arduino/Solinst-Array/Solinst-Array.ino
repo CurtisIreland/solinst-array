@@ -79,7 +79,7 @@ String getData() {
     String soilTemp  = String(sht1x.readTemperatureC());
     String soilHumid = String(sht1x.readHumidity());
 
-    String rainAmt = String(rainrate);
+    String rainAmt = String((millis() - tiptime) > 1828800 ? 0.0 : rainrate);
 
     String output = dhtTemp + "," + dhtHumid + "," + soilTemp + "," + soilHumid + "," + solTemp + "," + solDepth + "," + rainAmt;
     return(output);
@@ -88,7 +88,7 @@ String getData() {
 void raincount() {
   unsigned long tipcount = millis() - tiptime;
   tiptime = millis();
-  rainrate = 914400 / tipcount;
+  rainrate = 914400.0 / tipcount;
 
 
   delay(500);
