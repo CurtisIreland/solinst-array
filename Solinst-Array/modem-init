@@ -1,0 +1,86 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          modem
+# Required-Start:    $remote_fs
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Initialize GSM modem and initially set time
+# Description:       
+#                    
+#                    
+### END INIT INFO
+
+#
+# Author: Curtis Ireland <cireland@in-works.net>
+#
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="initialize modem"
+NAME=modem
+DAEMON=/usr/sbin/pppd
+
+# SCRIPTNAME=/etc/init.d/$NAME
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present
+#[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Define LSB log_* functions.
+. /lib/lsb/init-functions
+
+toggle_modem() {
+        gpio export 18 out
+
+        gpio -g write 18 0
+        sleep 8
+        gpio -g write 18 1
+}
+
+adjust_time() {
+	/usr/bin/pon fona
+
+	sleep 5
+	/usr/sbin/ntpdate pool.ntp.org
+	/usr/bin/poff fona
+}
+
+case "$1" in
+  start)
+	echo "Starting GSM modem"
+	if [ ! -c /dev/ttyUSB2 ]
+	then
+       		toggle_modem
+	fi
+
+	if [ -c /dev/ttyUSB2 ]
+	then
+       		adjust_time
+	fi
+	;;
+  stop)
+	echo "Stopping GSM modem"
+        if [ -c /dev/ttyUSB2 ]
+        then
+                toggle_modem
+        fi
+
+	;;
+  restart)
+	$0 stop
+        sleep 10
+	$0 start
+	;;
+  status)
+	exit 0
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|restart|status}" >&2
+	exit 3
+	;;
+esac
+
+:

@@ -15,14 +15,14 @@ then
 	toggle_modem
 fi
 
-/usr/bin/pon fona
-
-sleep 10
-/usr/bin/python /usr/local/solinst/web_submit.py
-
-/usr/bin/poff fona
-
 if [ -c /dev/ttyUSB2 ]
 then
-	toggle_modem
+	/usr/bin/pon fona
+
+	sleep 10
+	/usr/bin/python /usr/local/solinst/web_submit.py
+
+	/usr/bin/poff fona
+
+#	toggle_modem
 fi
