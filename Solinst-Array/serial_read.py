@@ -6,8 +6,9 @@ import os
 import ConfigParser
 
 # Load configuration
-config_file = "solinst.ini"
+config_file = "/usr/local/solinst/solinst.ini"
 if(not os.path.exists(config_file)):
+    print("ERROR: Cannot find configuration file.")
     exit(-1)
 
 Config = ConfigParser.ConfigParser()
