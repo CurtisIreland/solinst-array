@@ -15,7 +15,7 @@ SHT1x sht1x(SHTDATA, SHTCLK);
 SDI12 mySDI12(SDIPIN); 
 
 volatile unsigned long tiptime = millis();
-volatile unsigned long rainrate = 0;
+volatile double rainrate = 0.0;
            
 void setup(){
     Serial.begin(9600); 
