@@ -14,14 +14,17 @@ void loop() {
 }
 
 void count() {
+  // Grab the current ms count for common calculations
+  unsigned long curtime = millis();
+  
   // Make sure we don't record bounces
-  if ((millis() - tiptime) < interval) {
+  if ((curtime - tiptime) < interval) {
     return;
   }
 
   // How long since the last tip?
-  unsigned long tipcount = millis() - tiptime;
-  tiptime = millis();
+  unsigned long tipcount = curtime - tiptime;
+  tiptime = curtime;
   
   // Calculate mm/hr from period between cup tips
   double rainrate = 914400.0 / tipcount;
