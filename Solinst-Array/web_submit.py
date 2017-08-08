@@ -1,10 +1,12 @@
-import httplib as http
-import urllib
 import os
 import re
 import datetime
+import json
 import storage.database as lite
 import ConfigParser
+
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 def file_list(datadir):
     filelist = []
@@ -14,6 +16,22 @@ def file_list(datadir):
             filelist.append(files)
             
     return(filelist)
+
+def login_open_sheet(oauth_key_file, spreadsheet):
+    """Connect to Google Docs spreadsheet and return the first worksheet."""
+    try:
+        scope =  ['https://spreadsheets.google.com/feeds']
+        credentials = ServiceAccountCredentials.from_json_keyfile_name(oauth_key_file, scope)
+        gc = gspread.authorize(credentials)
+        worksheet = gc.open(spreadsheet).sheet1
+        return worksheet
+    except Exception as ex:
+        print('Unable to login and get spreadsheet.  Check OAuth credentials, spreadsheet name, and make sure spreadsheet is shared to the client_email address in the OAuth .json file!')
+        print('Google sheet login failed with error:', ex)
+        sys.exit(1)
+
+
+# if DEBUG: print("Rename old database file: " + newfile)
 
 #Load config file
 config_file = "/usr/local/solinst/solinst.ini"
@@ -26,8 +44,9 @@ Config.read(config_file)
 
 DEBUG = Config.getboolean("general", "debug")
 datadir = Config.get("general", "data_dir")
-data_public = Config.get("web_submit", "data_public")
-data_private = Config.get("web_submit", "data_private")
+array_id = Config.get("general", "array_id")
+GDOCS_OAUTH_JSON = Config.get("web_submit", "auth_file")
+GDOCS_SPREADSHEET_NAME = Config.get("web_submit", "data_file")
 
 # Determine the name of the current database
 today = datetime.datetime.today()
@@ -52,32 +71,15 @@ for files in filelist:
         continue
 
     for data in datalist:
-        request = {
-            'collect_date' : data[0],
-            'dht_temp' : data[1],
-            'dht_humid' : data[2],
-            'soil_temp' : data[3],
-            'soil_humid' : data[4],
-            'sol_temp' : data[5],
-            'sol_depth' : data[6],
-            'rain_rate' : data[7]
-        }
-    
-        conn = http.HTTPConnection("data.sparkfun.com")
-        conn_line = "/input/" + data_public + "?private_key=" + data_private + "&" + urllib.urlencode(request)
-        if DEBUG: print("Data URI: " + conn_line)
-        
-        conn.request("GET", conn_line)
-        r1 = conn.getresponse()
-#        print r1.read()
-        conn.close()
+        if DEBUG: print('Logging sensor measurements to {0}'.format(GDOCS_SPREADSHEET_NAME))
 
-        if DEBUG: print("Return code: " + r1.status)
-        if(r1.status != 200):
-            continue
-        
-#        conn.connect()
-            
+        uline = ","
+        uline.join(request)
+        if DEBUG: print('Encoded data: {0}'.format(uline))
+
+        worksheet = login_open_sheet(GDOCS_OAUTH_JSON, GDOCS_SPREADSHEET_NAME)
+        worksheet.append_row((array_id, uline.join(request), datetime.datetime.now()))        
+
         sensordb.sentData(str(data[0]))
         if DEBUG: print("Sent data: " + str(data[0]))
     sensordb.close()
