@@ -73,23 +73,8 @@ for files in filelist:
     for data in datalist:
         if DEBUG: print('Logging sensor measurements to {0}'.format(GDOCS_SPREADSHEET_NAME))
 
-        request = {
-            str(data[0]),
-            str(data[1]),
-            str(data[2]),
-            str(data[3]),
-            str(data[4]),
-            str(data[5]),
-            str(data[6]),
-            str(data[7])
-        }
-
-        uline = ","
-        uline.join(request)
-        if DEBUG: print('Encoded data: {0}'.format(uline))
-
         worksheet = login_open_sheet(GDOCS_OAUTH_JSON, GDOCS_SPREADSHEET_NAME)
-        worksheet.append_row((array_id, uline.join(request), datetime.datetime.now()))        
+        worksheet.append_row((array_id, str(data[0]), str(data[1]), str(data[2]), str(data[3]), str(data[4]), str(data[5]), str(data[6]), str(data[7]), datetime.datetime.now()))        
 
         sensordb.sentData(str(data[0]))
         if DEBUG: print("Sent data: " + str(data[0]))
