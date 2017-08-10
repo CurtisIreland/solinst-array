@@ -73,6 +73,17 @@ for files in filelist:
     for data in datalist:
         if DEBUG: print('Logging sensor measurements to {0}'.format(GDOCS_SPREADSHEET_NAME))
 
+        request = {
+            data[0],
+            data[1],
+            data[2],
+            data[3],
+            data[4],
+            data[5],
+            data[6],
+            data[7]
+        }
+
         uline = ","
         uline.join(request)
         if DEBUG: print('Encoded data: {0}'.format(uline))
